@@ -1,7 +1,7 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
   "Transform": "AWS::Serverless-2016-10-31",
-  "Description": "An AWS Serverless Application that uses the ASP.NET Core framework running in Amazon Lambda.",
+  "Description": "An AWS Serverless Application for syncing RDS data to OpenSearch.",
   "Parameters": {},
   "Conditions": {},
   "Resources": {
@@ -11,12 +11,38 @@
         "Handler": "TenderToolSyncLambda::TenderToolSyncLambda.LambdaEntryPoint::FunctionHandlerAsync",
         "Runtime": "dotnet8",
         "CodeUri": "",
-        "MemorySize": 512,
-        "Timeout": 30,
-        "Role": null,
+        "MemorySize": 1024,
+        "Timeout": 600,
+        
+        "VpcConfig": {
+          "SubnetIds": [
+            "subnet-0f47b68400d516b1e",
+            "subnet-072a27234084339fc"
+          ],
+          "SecurityGroupIds": [
+            "sg-0dc0af4fcf50676e9"
+          ]
+        },
+
         "Policies": [
-          "AWSLambda_FullAccess"
+          "AWSLambdaVPCAccessExecutionRole",
+          {
+            "Version": "2012-10-17",
+            "Statement": [
+              {
+                "Effect": "Allow",
+                "Action": [
+                  "es:ESHttpGet",
+                  "es:ESHttpPost",
+                  "es:ESHttpPut",
+                  "es:ESHttpDelete"
+                ],
+                "Resource": "arn:aws:es:us-east-1:211635102441:domain/tender-tool-search/*"
+              }
+            ]
+          }
         ],
+
         "Events": {
           "ProxyResource": {
             "Type": "Api",

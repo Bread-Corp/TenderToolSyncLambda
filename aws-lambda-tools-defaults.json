@@ -10,5 +10,7 @@
   "configuration": "Release",
   "s3-prefix": "TenderToolSyncLambda/",
   "template": "serverless.template",
-  "template-parameters": ""
+  "template-parameters": "",
+  "s3-bucket": "tender-tool-sync-deploy-bucket",
+  "stack-name": "tender-tool-sync-stack"
 }

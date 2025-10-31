@@ -221,6 +221,20 @@ GET /tenders/_search
 
 ## 🧰 Troubleshooting & Team Gotchas
 
+### ⚠️ CRITICAL: OpenSearch Internal Permissions
+
+Deploying the `SyncLambda` is not enough. The Lambda's IAM role must be mapped to the `all_access` role *inside* the OpenSearch Dashboard before it can write data.
+
+1.  Start the **EC2 Bastion Host** and connect via **SSH Tunnel**.
+2.  Log in to the **OpenSearch Dashboard** (`https://localhost:8443/_dashboards`) as your `opensearch_admin`.
+3.  Go to **Security** -\> **Roles** -\> **`all_access`**.
+4.  Click the **"Mapped users"** tab -\> **"Manage mapping"**.
+5.  In **"Backend roles,"** add the ARN of your `SyncLambda`'s role (e.g., `arn:aws:iam::...:role/tender-tool-sync-stack-AspNetCoreFunctionRole-...`).
+6.  Click **"Map"**.
+
+You must **repeat this** for the `TenderToolSearchLambda`'s role, but map it to the **`readall`** role.
+
+
 <details>
 <summary><strong>ERROR: Timeout during sync (10+ minutes)</strong></summary>
 

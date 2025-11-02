@@ -43,8 +43,18 @@ public class Startup
         });
 
         // 2. CONFIGURE ENTITY FRAMEWORK (for RDS)
+        // Get the connection string from the Lambda's environment variable
+        // instead of appsettings.json to avoid hardcoding secrets.
+        var connectionString = Configuration["DB_CONNECTION_STRING"];
+
+        // Fail fast if the environment variable is not set
+        if (string.IsNullOrEmpty(connectionString))
+        {
+            throw new InvalidOperationException("Database connection string 'DB_CONNECTION_STRING' is not set in the environment variables.");
+        }
+
         services.AddDbContext<ApplicationDbContext>(options =>
-            options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            options.UseSqlServer(connectionString));
 
         // 3. CONFIGURE OPENSEARCH CLIENT (for Searching)
         services.AddSingleton<IOpenSearchClient>(provider =>
